@@ -6,6 +6,8 @@ import { NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Rout
 
 import { AppState } from "./reducers";
 import { isLoggedIn, isLoggedOut } from "./auth/auth.selectors";
+import { logout } from './auth/auth.actions';
+import { AuthActions } from './auth/action-types';
 
 @Component({
   selector: 'app-root',
@@ -26,6 +28,14 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
+
+    // here as the app gets initialised we are cheking whether user is available in localStorage or not.
+    // If user is there in localStorage then we will dispatch a login action so that loggedIn user may persist
+    // or accessed courses page may persist even after browser refresh.
+    const userProfile = localStorage.getItem('user');
+    if (userProfile) {
+      this.store.dispatch(AuthActions.login({ user: JSON.parse(userProfile) }))
+    }
 
     this.router.events.subscribe(event => {
       switch (true) {
@@ -69,6 +79,7 @@ export class AppComponent implements OnInit {
   }
 
   logout() {
+    this.store.dispatch(logout());
 
   }
 
